@@ -27,6 +27,24 @@ const getAppointmentList = async (req, res, next) => {
   }
 };
 
+const getMonthlyAppointmentCounts = async (req, res) => {
+  try {
+    const appointmentCounts = await AppointmentModel.aggregate([
+      {
+        $group: {
+          _id: "$appointmentDate",
+          count: { $sum: 1 },
+        },
+      },
+    ]);
+
+    res.status(200).json(appointmentCounts);
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
 const getAppointmentByEmail = async (req, res) => {
   try {
     const appointment = await AppointmentModel.find({
@@ -43,4 +61,5 @@ module.exports = {
   getAppointmentById,
   getAppointmentList,
   getAppointmentByEmail,
+  getMonthlyAppointmentCounts,
 };
