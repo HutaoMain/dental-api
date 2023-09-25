@@ -2,9 +2,24 @@ const mongoose = require("mongoose");
 
 const UserSchema = new mongoose.Schema(
   {
+    clinicName: {
+      type: String,
+    },
+    profilePicture: {
+      type: String,
+    },
     fullname: {
       type: String,
       // required: true,
+    },
+    birthdate: {
+      type: String,
+    },
+    assistantName: {
+      type: String,
+    },
+    graduateSchool: {
+      type: String,
     },
     address: {
       type: String,

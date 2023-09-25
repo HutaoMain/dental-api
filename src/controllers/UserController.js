@@ -3,19 +3,20 @@ const bcrypt = require("bcrypt");
 
 const registerUser = async (req, res) => {
   try {
-    const { fullname, email, role, password } = req.body;
-
-    // if (
-    //   !fullname ||
-    //   !address ||
-    //   !contactNumber ||
-    //   !gender ||
-    //   !role ||
-    //   !email ||
-    //   !password
-    // ) {
-    //   return res.status(400).json({ message: "Missing required fields" });
-    // }
+    const {
+      profilePicture,
+      clinicName,
+      fullname,
+      birthdate,
+      assistantName,
+      graduateSchool,
+      address,
+      contactNumber,
+      gender,
+      email,
+      role,
+      password,
+    } = req.body;
 
     const existingUser = await UserModel.findOne({ email });
     if (existingUser) {
@@ -25,10 +26,15 @@ const registerUser = async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const newUser = new UserModel({
+      profilePicture,
+      clinicName,
       fullname,
-      // address,
-      // contactNumber,
-      // gender,
+      birthdate,
+      assistantName,
+      graduateSchool,
+      address,
+      contactNumber,
+      gender,
       email,
       role,
       password: hashedPassword,

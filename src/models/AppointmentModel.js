@@ -2,6 +2,12 @@ const mongoose = require("mongoose");
 
 const AppointmentSchema = new mongoose.Schema(
   {
+    doctorName: {
+      type: String,
+    },
+    clinicName: {
+      type: String,
+    },
     email: {
       type: String,
       required: true,
@@ -11,7 +17,6 @@ const AppointmentSchema = new mongoose.Schema(
     },
     contactNumber: {
       type: String,
-      required: true,
     },
     gender: {
       type: String,
