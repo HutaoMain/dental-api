@@ -8,6 +8,7 @@ dotEnv.config();
 
 const UserRouter = require("./routes/UserRouter");
 const AppointmentRouter = require("./routes/AppointmentRouter");
+const TreatmentRecordRouter = require("./routes/TreatmentRecordRouter");
 
 const app = express();
 app.use(express.json());
@@ -35,6 +36,7 @@ const connect = async () => {
 
 app.use("/api/user", UserRouter);
 app.use("/api/appointment", AppointmentRouter);
+app.use("/api/treatment-record", TreatmentRecordRouter);
 
 const PORT = 5000;
 app.listen(PORT, () => {

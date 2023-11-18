@@ -11,7 +11,7 @@ const createAppointment = async (req, res) => {
 
 const getAppointmentById = async (req, res) => {
   try {
-    const appointment = await AppointmentModel.findById(req.params._id);
+    const appointment = await AppointmentModel.findById(req.params.id);
     res.status(200).json(appointment);
   } catch (err) {
     console.log(err);
