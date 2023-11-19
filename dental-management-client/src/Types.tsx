@@ -10,6 +10,7 @@ export interface LoginInterface {
 }
 
 export interface AppointmentInterface {
+  _id: string;
   appointmentDate: string;
   appointmentTime: string;
   reason: string;
@@ -37,19 +38,16 @@ export interface UserInterface {
   profilePicture: string;
 }
 
-export interface UserInterface {
+export interface ITreatmentRecord {
   _id: string;
-  clinicName: string;
-  birthdate: string;
-  assistantName: string;
-  graduateSchool: string;
-  fullname: string;
-  address: string;
-  contactNumber: string;
-  gender: string;
   email: string;
-  role: string;
-  profilePicture: string;
+  toothNumber: number;
+  procedure: string;
+  dentist: string;
+  amountCharge: number;
+  amountPaid: number;
+  balance: number;
+  nextAppointment: string;
 }
 
 // reusable transition effect only

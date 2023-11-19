@@ -8,4 +8,6 @@ router.get("/:id", TreatmentRecordController.getTreatmentRecordById);
 
 router.get("/", TreatmentRecordController.getTreatmentRecordList);
 
+router.get("/userId/:userId", TreatmentRecordController.getTreatmentByUserId);
+
 module.exports = router;

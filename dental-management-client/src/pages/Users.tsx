@@ -15,6 +15,8 @@ import { useEffect, useState } from "react";
 import { Search } from "@mui/icons-material";
 import AddDoctor from "../components/AddDoctor";
 import ViewDoctor from "../components/ViewDoctor";
+// import ViewTreatmentRecord from "../components/ViewTreatmentRecord";
+import { Link } from "react-router-dom";
 
 const Users = () => {
   const [selectedRole, setSelectedRole] = useState<string>("");
@@ -129,14 +131,20 @@ const Users = () => {
                       View Doctor Details
                     </button>
                   ) : (
-                    <button className="px-5 py-2 rounded-xl bg-[#FBC00E] hover:bg-[#FFD774] w-[200px]">
-                      View Treatment Record
-                    </button>
+                    <Link to={`/users/${item._id}`}>
+                      <button className="px-5 py-2 rounded-xl bg-[#FBC00E] hover:bg-[#FFD774] w-[200px]">
+                        View Treatment Record
+                      </button>
+                    </Link>
                   )}
                 </TableCell>
                 {/* View Doctor */}
                 <Dialog
-                  open={openViewDoctorArray[index]}
+                  open={
+                    openViewDoctorArray[index]
+                      ? openViewDoctorArray[index]
+                      : isOpen
+                  }
                   onClose={() => toggleViewDoctor(index)}
                   maxWidth="sm"
                   TransitionComponent={Transition}
@@ -149,6 +157,22 @@ const Users = () => {
                     />
                   </DialogContent>
                 </Dialog>
+                {/* <Dialog
+                  open={isTreatmentRecordOpen}
+                  onClose={toggleViewTreatmentRecordClose}
+                  maxWidth="lg"
+                  TransitionComponent={Transition}
+                  keepMounted
+                >
+                  <DialogContent>
+                    <ViewTreatmentRecord
+                      toggleViewTreatmentRecordClose={
+                        toggleViewTreatmentRecordClose
+                      }
+                      email={email || ""}
+                    />
+                  </DialogContent>
+                </Dialog> */}
               </TableRow>
             ))}
           </TableBody>

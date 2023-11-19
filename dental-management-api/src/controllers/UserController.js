@@ -92,9 +92,36 @@ const getUserList = async (req, res) => {
   }
 };
 
+const getUserById = async (req, res) => {
+  try {
+    const userList = await UserModel.findById(req.params.id);
+    res.status(200).json(userList);
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+const updateUserByContactNumber = async (req, res) => {
+  const { password } = req.body;
+
+  const hashedPassword = await bcrypt.hash(password, 10);
+
+  try {
+    const user = await UserModel.findOneAndUpdate(
+      { contactNumber: req.params.contactNumber },
+      { password: hashedPassword }
+    );
+    res.status(200).json(user);
+  } catch (error) {
+    console.log(error);
+  }
+};
+
 module.exports = {
   registerUser,
   loginUser,
   getSpecificUserByEmail,
   getUserList,
+  getUserById,
+  updateUserByContactNumber,
 };

@@ -27,8 +27,20 @@ const getTreatmentRecordList = async (req, res, next) => {
   }
 };
 
+const getTreatmentByUserId = async (req, res, next) => {
+  try {
+    const appointment = await TreatmentRecordModel.find({
+      userId: req.params.userId,
+    });
+    res.status(200).json(appointment);
+  } catch (err) {
+    next(err);
+  }
+};
+
 module.exports = {
   createTreatmentRecord,
   getTreatmentRecordById,
   getTreatmentRecordList,
+  getTreatmentByUserId,
 };

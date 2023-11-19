@@ -27,6 +27,9 @@ const TreatmentRecordSchema = new mongoose.Schema(
     nextAppointment: {
       type: String,
     },
+    userId: {
+      type: String,
+    },
   },
   {
     timestamps: true,

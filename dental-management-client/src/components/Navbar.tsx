@@ -26,18 +26,12 @@ const Navbar = ({ user }: any) => {
     <>
       <nav className="bg-[#29B3FF]">
         <div className="flex flex-wrap justify-between items-center mx-auto max-w-screen-xl p-4">
-          <a href="https://flowbite.com" className="flex items-center">
+          <a href="/" className="flex items-center">
             <span className="self-center text-2xl font-semibold whitespace-nowrap text-white">
               Cotabato Dental Clinics
             </span>
           </a>
           <div className="flex items-center">
-            {/* <a
-              href="tel:5541251234"
-              className="mr-6 text-sm  text-white hover:underline"
-            >
-              (555) 412-1234
-            </a> */}
             {user ? (
               <div className="flex items-center gap-3">
                 <span className="text-white">{user}</span>
@@ -95,11 +89,6 @@ const Navbar = ({ user }: any) => {
                     Appointments
                   </a>
                 </li>
-                {/* <li>
-                <a href="#" className="text-white hover:underline">
-                  Features
-                </a>
-              </li> */}
               </ul>
             </div>
           ) : null}

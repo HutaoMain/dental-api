@@ -10,7 +10,6 @@ const UserSchema = new mongoose.Schema(
     },
     fullname: {
       type: String,
-      // required: true,
     },
     birthdate: {
       type: String,
@@ -23,19 +22,15 @@ const UserSchema = new mongoose.Schema(
     },
     address: {
       type: String,
-      // required: true,
     },
     contactNumber: {
       type: String,
-      // required: true,
     },
     gender: {
       type: String,
-      // required: true,
     },
     email: {
       type: String,
-      // required: true,
     },
     role: {
       type: String,
