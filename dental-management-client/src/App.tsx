@@ -11,6 +11,7 @@ import OTP from "./components/OTP";
 
 function App() {
   const user = useAuthStore((state) => state.user);
+
   return (
     <div className="overflow-x-hidden">
       <Navbar user={user} />

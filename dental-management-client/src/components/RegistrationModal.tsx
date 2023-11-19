@@ -7,6 +7,7 @@ const RegistrationModal = ({ toggleRegistrationModal }: any) => {
   const [registrationInfo, setRegistrationInfo] =
     useState<RegistrationInterface>({
       fullname: "",
+      contactNumber: "",
       email: "",
       password: "",
     });
@@ -62,7 +63,7 @@ const RegistrationModal = ({ toggleRegistrationModal }: any) => {
   };
 
   return (
-    <div className="w-[300px] h-[390px] bg-neutral-100 flex flex-col items-center justify-center p-6 rounded-lg">
+    <div className="w-[300px] h-[450px] bg-neutral-100 flex flex-col items-center justify-center p-6 rounded-lg">
       <h2>Registration</h2>
       <hr className="w-full mb-5 mt-3" />
       <div className="flex items-center flex-col">
@@ -77,6 +78,7 @@ const RegistrationModal = ({ toggleRegistrationModal }: any) => {
           />
         </label>
       </div>
+
       <div className="flex items-center flex-col">
         <label>
           Email
@@ -89,6 +91,20 @@ const RegistrationModal = ({ toggleRegistrationModal }: any) => {
           />
         </label>
       </div>
+
+      <div className="flex items-center flex-col">
+        <label>
+          Contact Number
+          <input
+            className="w-[250px] rounded border mb-4 p-2 border-solid border-[#ccc]"
+            type="text"
+            placeholder="Contact Number"
+            name="contactNumber"
+            onChange={onChangeHandler}
+          />
+        </label>
+      </div>
+
       <div className="flex items-center flex-col">
         <label>
           Password

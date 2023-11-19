@@ -3,7 +3,7 @@ import dayGridPlugin from "@fullcalendar/daygrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import { Dialog, DialogContent } from "@mui/material";
 import { useState } from "react";
-import Modal from "./Modal";
+import AddClientAppointment from "./AddClientAppointment";
 import { AppointmentInterface, Transition } from "../Types";
 import { useQuery } from "react-query";
 import axios from "axios";
@@ -15,7 +15,7 @@ const Calendar = () => {
 
   const { data } = useQuery<AppointmentInterface[]>("Calendar", async () => {
     const response = await axios.get(
-      `${import.meta.env.VITE_APP_API_URL}/api/appointment/list/${user}`
+      `${import.meta.env.VITE_APP_API_URL}/api/appointment`
     );
     return response.data.map((appointment: any) => ({
       title: appointment.appointmentTime,
@@ -63,7 +63,10 @@ const Calendar = () => {
         >
           <DialogContent>
             {user ? (
-              <Modal selectedDate={selectedDate} toggleIsOpen={toggleIsOpen} />
+              <AddClientAppointment
+                selectedDate={selectedDate}
+                toggleIsOpen={toggleIsOpen}
+              />
             ) : (
               <LoginModal />
             )}

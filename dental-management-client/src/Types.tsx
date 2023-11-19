@@ -1,5 +1,6 @@
 export interface RegistrationInterface {
   fullname: string;
+  contactNumber: string;
   email: string;
   password: string;
 }

@@ -33,6 +33,12 @@ const AppointmentSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    birthdate: {
+      type: String,
+    },
+    address: {
+      type: String,
+    },
   },
   {
     timestamps: true,

@@ -17,12 +17,27 @@ import AddDoctor from "../components/AddDoctor";
 import ViewDoctor from "../components/ViewDoctor";
 // import ViewTreatmentRecord from "../components/ViewTreatmentRecord";
 import { Link } from "react-router-dom";
+import useAuthStore from "../zustand/AuthStore";
 
 const Users = () => {
-  const [selectedRole, setSelectedRole] = useState<string>("");
+  // const [selectedRole, setSelectedRole] = useState<string>("");
   const [filteredUser, setFilteredUser] = useState<UserInterface[]>();
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [isOpen, setIsOpen] = useState<boolean>(false);
+
+  const user = useAuthStore((state) => state.user);
+
+  const [userData, setUserData] = useState<UserInterface>();
+
+  useEffect(() => {
+    const fetch = async () => {
+      const res = await axios.get(
+        `${import.meta.env.VITE_APP_API_URL}/api/user/${user}`
+      );
+      setUserData(res.data);
+    };
+    fetch();
+  }, [user]);
 
   const { data } = useQuery<UserInterface[]>({
     queryKey: ["Users"],
@@ -37,16 +52,25 @@ const Users = () => {
   };
 
   useEffect(() => {
-    const filtered = data?.filter((user) =>
-      user.role.toLowerCase().includes(selectedRole.toLowerCase())
-    );
-
-    if (selectedRole !== "") {
-      return setFilteredUser(filtered);
+    let filtered;
+    if (userData?.role === "admin") {
+      filtered = data?.filter((user) =>
+        user.role.toLowerCase().includes("doctor")
+      );
+    } else {
+      filtered = data?.filter((user) =>
+        user.role.toLowerCase().includes("patient")
+      );
     }
 
-    return setFilteredUser(data);
-  }, [data, selectedRole]);
+    console.log("sample");
+
+    // if (selectedRole !== "") {
+    //   return setFilteredUser(filtered);
+    // }
+    return setFilteredUser(filtered);
+    // return setFilteredUser(data);
+  }, [data, userData]);
 
   const filtered = filteredUser?.filter((item) => {
     return item.fullname.toLowerCase().includes(searchTerm.toLowerCase());
@@ -66,19 +90,21 @@ const Users = () => {
   return (
     <div className="flex items-center w-full mt-5 flex-col">
       <div className="flex items-center gap-10 mb-5 max-w-[1280px] w-full">
-        <div>
-          <label className="text-base mr-2.5">Select Role:</label>
-          <select
-            className="text-base border-[3px] rounded bg-white appearance-none cursor-pointer px-3 py-2 border-solid border-[#ccc] w-[150px] text-[20px]"
-            value={selectedRole}
-            onChange={(e) => setSelectedRole(e.target.value)}
-          >
-            <option value="">All</option>
-            <option value="doctor">Doctor</option>
-            <option value="patient">Patient</option>
-            {/* <option value="staff">Staff</option> */}
-          </select>
-        </div>
+        {/* {userData?.role === "admin" && (
+          <div>
+            <label className="text-base mr-2.5">Select Role:</label>
+            <select
+              className="text-base border-[3px] rounded bg-white appearance-none cursor-pointer px-3 py-2 border-solid border-[#ccc] w-[150px] text-[20px]"
+              value={selectedRole}
+              onChange={(e) => setSelectedRole(e.target.value)}
+            >
+              <option value="">All</option>
+              <option value="doctor">Doctor</option>
+              <option value="patient">Patient</option>
+              {/* <option value="staff">Staff</option> 
+            </select>
+          </div>
+        )} */}
 
         <div className=" border-[#ccc] border-[3px] pl-2 rounded-lg w-[300px]">
           <Search />
@@ -88,12 +114,14 @@ const Users = () => {
             onChange={(e) => setSearchTerm(e.target.value)}
           />
         </div>
-        <button
-          className="border border-black p-2 rounded-md"
-          onClick={() => setIsOpen(true)}
-        >
-          Add Doctor
-        </button>
+        {userData?.role === "admin" && (
+          <button
+            className="border border-black p-2 rounded-md"
+            onClick={() => setIsOpen(true)}
+          >
+            Add Doctor
+          </button>
+        )}
       </div>
       <TableContainer className="max-w-[1280px]">
         <Table>
@@ -118,7 +146,6 @@ const Users = () => {
               <TableRow key={item.email}>
                 <TableCell align="center">{item.email}</TableCell>
                 <TableCell align="center">{item.fullname}</TableCell>
-                {/* <TableCell align="center">{item.contactNumber}</TableCell> */}
                 <TableCell align="center">
                   <span className="capitalize">{item.role}</span>
                 </TableCell>
@@ -138,7 +165,7 @@ const Users = () => {
                     </Link>
                   )}
                 </TableCell>
-                {/* View Doctor */}
+
                 <Dialog
                   open={
                     openViewDoctorArray[index]

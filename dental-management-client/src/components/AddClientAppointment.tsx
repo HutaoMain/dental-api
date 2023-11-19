@@ -10,10 +10,11 @@ import useAuthStore from "../zustand/AuthStore";
 import { toast } from "react-toastify";
 import { useQuery } from "react-query";
 import { UserInterface } from "../Types";
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 
 const steps = 5;
 
-const Modal = ({ selectedDate, toggleIsOpen }: any) => {
+const AddClientAppointment = ({ selectedDate, toggleIsOpen }: any) => {
   const theme = useTheme();
   const [activeStep, setActiveStep] = useState(0);
 
@@ -26,10 +27,14 @@ const Modal = ({ selectedDate, toggleIsOpen }: any) => {
   const [selectedEmail, setSelectedEmail] = useState<string>("");
   const [doctorData, setDoctorData] = useState<UserInterface>();
 
+  const [birthdate, setBirthdate] = useState<Dayjs | null>(null);
+
+  const [address, setAddress] = useState<string>("");
+
   console.log("selectedEmail", selectedEmail);
 
   const { data } = useQuery<UserInterface[]>({
-    queryKey: ["Modal"],
+    queryKey: ["AddClientAppointment"],
     queryFn: () =>
       axios
         .get(`${import.meta.env.VITE_APP_API_URL}/api/user/list`)
@@ -67,6 +72,8 @@ const Modal = ({ selectedDate, toggleIsOpen }: any) => {
       reason: reason,
       clinicName: doctorData?.clinicName,
       doctorName: doctorData?.fullname,
+      address: address,
+      birthdate: birthdate,
     };
     try {
       await axios.post(
@@ -135,50 +142,92 @@ const Modal = ({ selectedDate, toggleIsOpen }: any) => {
       )}
       {activeStep === 3 && (
         <div className="flex flex-col gap-3 w-[300px] items-center pb-5">
-          <input
-            type="text"
-            placeholder="Fullname"
-            value={fullName}
-            className="w-full border border-black p-3"
-            onChange={(event) => {
-              const inputValue = event.target.value;
+          <div className="mb-2 w-full">
+            <label className="block text-sm font-medium text-gray-600">
+              Full name
+            </label>
+            <input
+              type="text"
+              placeholder="Fullname"
+              value={fullName}
+              className="w-full border border-black p-3"
+              onChange={(event) => {
+                const inputValue = event.target.value;
 
-              // Check if the input contains any numbers
-              if (/\d/.test(inputValue)) {
-                alert("Please enter only letters (no numbers)");
-                return setFullName("");
-              }
+                // Check if the input contains any numbers
+                if (/\d/.test(inputValue)) {
+                  alert("Please enter only letters (no numbers)");
+                  return setFullName("");
+                }
 
-              // If no numbers are found, update the state
-              setFullName(inputValue);
-            }}
-          />
-          <input
-            type="text"
-            maxLength={11}
-            minLength={11}
-            placeholder="Contact Number"
-            value={contactNumber}
-            className="w-full border border-black  p-3"
-            onChange={(e) => {
-              const inputValue = e.target.value;
+                // If no numbers are found, update the state
+                setFullName(inputValue);
+              }}
+            />
+          </div>
 
-              if (/[a-zA-Z]/.test(inputValue)) {
-                alert("Please enter only numbers (no letters)");
-                return setContactNumber("");
-              }
+          <div className="mb-2 w-full">
+            <label className="block text-sm font-medium text-gray-600">
+              Contact Number
+            </label>
+            <input
+              type="text"
+              maxLength={11}
+              minLength={11}
+              placeholder="Contact Number"
+              value={contactNumber}
+              className="w-full border border-black  p-3"
+              onChange={(e) => {
+                const inputValue = e.target.value;
 
-              setContactNumber(inputValue);
-            }}
-          />
+                if (/[a-zA-Z]/.test(inputValue)) {
+                  alert("Please enter only numbers (no letters)");
+                  return setContactNumber("");
+                }
 
-          <textarea
-            cols={30}
-            rows={5}
-            placeholder="Reason for appointment"
-            className="w-full border border-black  p-3"
-            onChange={(e) => setReason(e.target.value)}
-          ></textarea>
+                setContactNumber(inputValue);
+              }}
+            />
+          </div>
+
+          <div className="mb-2 w-full">
+            <label className="block text-sm font-medium text-gray-600">
+              Birthdate
+            </label>
+            <LocalizationProvider dateAdapter={AdapterDayjs}>
+              <DatePicker
+                sx={{ width: "100%" }}
+                value={birthdate}
+                onChange={(newValue) => setBirthdate(newValue)}
+              />
+            </LocalizationProvider>
+          </div>
+
+          <div className="mb-1 w-full">
+            <label className="block text-sm font-medium text-gray-600">
+              Address
+            </label>
+            <textarea
+              cols={30}
+              rows={5}
+              placeholder="Address"
+              className="w-full border border-black p-3"
+              onChange={(e) => setAddress(e.target.value)}
+            ></textarea>
+          </div>
+
+          <div className="mb-2 w-full">
+            <label className="block text-sm font-medium text-gray-600">
+              Reason for appointment
+            </label>
+            <textarea
+              cols={30}
+              rows={5}
+              placeholder="Reason for appointment"
+              className="w-full border border-black  p-3"
+              onChange={(e) => setReason(e.target.value)}
+            ></textarea>
+          </div>
         </div>
       )}
       {activeStep === 4 && (
@@ -230,4 +279,4 @@ const Modal = ({ selectedDate, toggleIsOpen }: any) => {
   );
 };
 
-export default Modal;
+export default AddClientAppointment;

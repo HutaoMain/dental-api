@@ -55,43 +55,49 @@ const Navbar = ({ user }: any) => {
       </nav>
       <nav className="bg-gray-700">
         <div className="max-w-screen-xl px-4 py-3 mx-auto">
-          {data?.role === "doctor" ? (
-            <div className="flex items-center">
-              <ul className="flex flex-row font-medium mt-0 mr-6 space-x-8 text-sm">
-                <li>
-                  <a
-                    href="/"
-                    className="text-white hover:underline"
-                    aria-current="page"
-                  >
-                    Home
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="/dashboard"
-                    className="text-white hover:underline"
-                    aria-current="page"
-                  >
-                    Dashboard
-                  </a>
-                </li>
+          <div className="flex items-center">
+            <ul className="flex flex-row font-medium mt-0 mr-6 space-x-8 text-sm">
+              {data?.role === "doctor" ? (
+                <>
+                  <li>
+                    <a
+                      href="/"
+                      className="text-white hover:underline"
+                      aria-current="page"
+                    >
+                      Home
+                    </a>
+                  </li>
+                  <li>
+                    <a
+                      href="/dashboard"
+                      className="text-white hover:underline"
+                      aria-current="page"
+                    >
+                      Dashboard
+                    </a>
+                  </li>
+
+                  <li>
+                    <a
+                      href="/appointments"
+                      className="text-white hover:underline"
+                    >
+                      Appointments
+                    </a>
+                  </li>
+                </>
+              ) : null}
+
+              {data?.role !== "patient" && (
                 <li>
                   <a href="/users" className="text-white hover:underline">
                     Users
                   </a>
                 </li>
-                <li>
-                  <a
-                    href="/appointments"
-                    className="text-white hover:underline"
-                  >
-                    Appointments
-                  </a>
-                </li>
-              </ul>
-            </div>
-          ) : null}
+              )}
+            </ul>
+          </div>
         </div>
         <Dialog
           open={isLoginOpen}
