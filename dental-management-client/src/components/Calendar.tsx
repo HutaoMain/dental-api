@@ -53,6 +53,7 @@ const Calendar = () => {
           dateClick={(info) => toggleIsOpen(info.date)}
           events={data}
           validRange={validDate}
+          hiddenDays={[0]}
         />
         <Dialog
           open={isOpen}

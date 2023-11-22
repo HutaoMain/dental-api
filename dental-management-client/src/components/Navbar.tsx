@@ -89,12 +89,31 @@ const Navbar = ({ user }: any) => {
                 </>
               ) : null}
 
-              {data?.role !== "patient" && (
+              {data?.role === "user" && (
                 <li>
-                  <a href="/users" className="text-white hover:underline">
-                    Users
+                  <a
+                    href="/client-appointments"
+                    className="text-white hover:underline"
+                  >
+                    Appointments
                   </a>
                 </li>
+              )}
+
+              {data?.role === "admin" ? (
+                <li>
+                  <a href="/doctors" className="text-white hover:underline">
+                    Doctors
+                  </a>
+                </li>
+              ) : data?.role === "doctor" ? (
+                <li>
+                  <a href="/patients" className="text-white hover:underline">
+                    Patients
+                  </a>
+                </li>
+              ) : (
+                <></>
               )}
             </ul>
           </div>

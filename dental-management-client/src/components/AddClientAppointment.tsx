@@ -11,8 +11,11 @@ import { toast } from "react-toastify";
 import { useQuery } from "react-query";
 import { UserInterface } from "../Types";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import { Tooltip } from "react-tooltip";
 
 const steps = 5;
+
+const maxAppointmentsPerDay = 5;
 
 const AddClientAppointment = ({ selectedDate, toggleIsOpen }: any) => {
   const theme = useTheme();
@@ -23,13 +26,51 @@ const AddClientAppointment = ({ selectedDate, toggleIsOpen }: any) => {
   const [time, setTime] = useState<Dayjs | null>(dayjs(new Date()));
   const [fullName, setFullName] = useState<string>("");
   const [contactNumber, setContactNumber] = useState<string>();
-  const [reason, setReason] = useState<string>();
+  const [selectedService, setSelectedService] = useState<string>();
   const [selectedEmail, setSelectedEmail] = useState<string>("");
   const [doctorData, setDoctorData] = useState<UserInterface>();
+  const [appointmentCount, setAppointmentCount] = useState<number>(0);
+  const [loading, setLoading] = useState<boolean>(false);
+
+  const roundedTime =
+    Number(time?.minute()) < 1
+      ? time?.startOf("hour")
+      : Number(time?.add(1, "hour").startOf("hour")) + 1;
+
+  useEffect(() => {
+    // Fetch existing appointments for the selected date and doctor/clinic
+    const fetchAppointments = async () => {
+      try {
+        const response = await axios.get(
+          `${
+            import.meta.env.VITE_APP_API_URL
+          }/api/appointment/getByEmailAndAppointmentDate/count`,
+          {
+            params: {
+              email: user,
+              appointmentDate: dayjs(selectedDate).format("YYYY-MM-DD"),
+              doctorEmail: selectedEmail,
+            },
+          }
+        );
+        setAppointmentCount(response.data);
+      } catch (error) {
+        console.error("Error fetching appointment count:", error);
+      }
+    };
+
+    fetchAppointments();
+  }, [selectedEmail, selectedDate]);
 
   const [birthdate, setBirthdate] = useState<Dayjs | null>(null);
 
   const [address, setAddress] = useState<string>("");
+
+  const isDisabledButton = appointmentCount >= maxAppointmentsPerDay;
+
+  console.log("boolean isDisableButton", isDisabledButton);
+
+  console.log("appointment Count", appointmentCount);
 
   console.log("selectedEmail", selectedEmail);
 
@@ -64,14 +105,16 @@ const AddClientAppointment = ({ selectedDate, toggleIsOpen }: any) => {
   };
 
   const handleSubmitAppointment = async () => {
+    setLoading(true);
     const appointmentData = {
       email: user,
       contactNumber: contactNumber,
       appointmentDate: dayjs(selectedDate).format("YYYY-MM-DD"),
       appointmentTime: dayjs(time).format("hh:mmA"),
-      reason: reason,
+      service: selectedService,
       clinicName: doctorData?.clinicName,
       doctorName: doctorData?.fullname,
+      doctorEmail: selectedEmail,
       address: address,
       birthdate: birthdate,
     };
@@ -80,7 +123,8 @@ const AddClientAppointment = ({ selectedDate, toggleIsOpen }: any) => {
         `${import.meta.env.VITE_APP_API_URL}/api/appointment/create`,
         appointmentData
       );
-      toast("Successful Registration!", {
+
+      toast("Successful Appointment!", {
         type: "success",
         position: "bottom-right",
         autoClose: 2000,
@@ -91,13 +135,13 @@ const AddClientAppointment = ({ selectedDate, toggleIsOpen }: any) => {
       });
       setTimeout(() => {
         window.location.reload();
+        setLoading(false);
       }, 2000);
     } catch (error) {
+      setLoading(false);
       console.log(error);
     }
   };
-
-  console.log(fullName);
 
   return (
     <div>
@@ -112,7 +156,10 @@ const AddClientAppointment = ({ selectedDate, toggleIsOpen }: any) => {
       {activeStep === 1 && (
         <div className="flex flex-col w-[300px] items-center pb-5">
           <select
-            onChange={(e) => setSelectedEmail(e.target.value)}
+            onChange={(e) => {
+              setSelectedEmail(e.target.value);
+              setSelectedService("");
+            }}
             className="border border-black p-2 m-2"
           >
             <option value="">Please select dental clinic here.</option>
@@ -133,9 +180,12 @@ const AddClientAppointment = ({ selectedDate, toggleIsOpen }: any) => {
           <label className="pb-3">Time of Appointment:</label>
           <LocalizationProvider dateAdapter={AdapterDayjs}>
             <DesktopTimePicker
-              value={time}
+              value={dayjs(roundedTime)}
               onChange={(newValue) => setTime(newValue)}
-              timeSteps={{ hours: 1, minutes: 1, seconds: 1 }}
+              timeSteps={{ hours: 1, minutes: 60, seconds: 60 }}
+              sx={{ color: "white", backgroundColor: "white" }}
+              minTime={dayjs().startOf("day").add(9, "hour")}
+              maxTime={dayjs().startOf("day").add(17, "hour")}
             />
           </LocalizationProvider>
         </div>
@@ -218,15 +268,78 @@ const AddClientAppointment = ({ selectedDate, toggleIsOpen }: any) => {
 
           <div className="mb-2 w-full">
             <label className="block text-sm font-medium text-gray-600">
-              Reason for appointment
+              Services
             </label>
-            <textarea
-              cols={30}
-              rows={5}
-              placeholder="Reason for appointment"
+            <select
+              value={selectedService}
+              onChange={(e) => setSelectedService(e.target.value)}
               className="w-full border border-black  p-3"
-              onChange={(e) => setReason(e.target.value)}
-            ></textarea>
+              disabled={!selectedEmail}
+            >
+              <option value="">Please select a service</option>
+              {selectedEmail === "clangbajit05@gmail.com" && ( // Clariteeth Dental Clinic
+                <>
+                  <option value="Oral prophylaxis">Oral prophylaxis</option>
+                  <option value="Tooth restoration">Tooth restoration</option>
+                  <option value="Tooth extraction">Tooth extraction</option>
+                  <option value="Oral surgery/Odontectomy">
+                    Oral surgery/Odontectomy
+                  </option>
+                  <option value="Dentures">Dentures</option>
+                  <option value="Crowns and fix bridges">
+                    Crowns and fix bridges
+                  </option>
+                  <option value="Veneers">Veneers</option>
+                  <option value="Teeth whitening">Teeth whitening</option>
+                  <option value="Root canal treatment">
+                    Root canal treatment
+                  </option>
+                  <option value="Dental x-ray (periapical x-ray)">
+                    Dental x-ray
+                  </option>
+                  <option value="Orthodontic braces">Orthodontic braces</option>
+                  <option value="Retainers">Retainers</option>
+                  <option value="Fluoride application">
+                    Fluoride application
+                  </option>
+                </>
+              )}
+              {selectedEmail === "markenrico30@gmail.com" && ( // Toothland Dental Clinic
+                <>
+                  <option value="Oral prophylaxis">Oral prophylaxis</option>
+                  <option value="Tooth restoration">Tooth restoration</option>
+                  <option value="Tooth extraction">Tooth extraction</option>
+                  <option value="Dentures">Dentures</option>
+                  <option value="Braces">Braces</option>
+                  <option value="Veneers">Veneers</option>
+                  <option value="Crowns and bridges">Crowns and bridges</option>
+                  <option value="Endodontics">Endodontics</option>
+                </>
+              )}
+              {selectedEmail === "dr.cajote@yahoo.com" && ( // Maguindanao Dental Clinic
+                <>
+                  <option value="Tooth restoration">Tooth restoration</option>
+                  <option value="Tooth extraction">Tooth extraction</option>
+                  <option value="Oral prophylaxis">Oral prophylaxis</option>
+                  <option value="Braces">Braces</option>
+                  <option value="Vaneers">Vaneers</option>
+                  <option value="Jacket crown">Jacket crown</option>
+                  <option value="Retainers">Retainers</option>
+                  <option value="Dentures">Dentures</option>
+                  <option value="Teeth whitening">Teeth whitening</option>
+                </>
+              )}
+
+              {selectedEmail === "ronierluces@gmail.com" && ( // Stardent Dental Clinic
+                <>
+                  <option value="Tooth extraction">Tooth extraction</option>
+                  <option value="Filling/Pasta">Filling/Pasta</option>
+                  <option value="Cleaning">Cleaning</option>
+                  <option value="Braces">Braces</option>
+                  <option value="Dentures">Dentures</option>
+                </>
+              )}
+            </select>
           </div>
         </div>
       )}
@@ -234,10 +347,20 @@ const AddClientAppointment = ({ selectedDate, toggleIsOpen }: any) => {
         <div className="flex flex-col gap-3 w-[300px] items-center justify-center text-center pb-5">
           <span>Are you sure you want to submit your appointment?</span>
           <button
-            className="bg-green-500 hover:bg-green-600 text-white p-3 rounded-lg"
+            className={`p-3 rounded-lg ${
+              isDisabledButton
+                ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+                : "bg-green-500 hover:bg-green-600 text-white"
+            }`}
             onClick={handleSubmitAppointment}
+            disabled={isDisabledButton}
+            data-tooltip-id="my-tooltip"
+            data-tooltip-content={
+              isDisabledButton ? "Clinic not available right now" : ""
+            }
           >
-            Submit Appointment
+            {loading ? "Please wait.." : "Submit Appointment"}
+            <Tooltip id="my-tooltip" />
           </button>
           <button
             className="bg-red-500 hover:bg-red-600 text-white p-3 rounded-lg"

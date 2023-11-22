@@ -16,4 +16,6 @@ router.put(
   UserController.updateUserByContactNumber
 );
 
+router.get("/getPatients/patient", UserController.getUsersByRolePatient);
+
 module.exports = router;

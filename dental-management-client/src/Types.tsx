@@ -14,7 +14,7 @@ export interface AppointmentInterface {
   _id: string;
   appointmentDate: string;
   appointmentTime: string;
-  reason: string;
+  service: string;
   email: string;
   address: string;
   contactNumber: string;
@@ -22,6 +22,7 @@ export interface AppointmentInterface {
   createdAt: string;
   doctorName: string;
   clinicName: string;
+  status: string;
 }
 
 export interface UserInterface {

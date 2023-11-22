@@ -27,6 +27,17 @@ const getAppointmentList = async (req, res, next) => {
   }
 };
 
+const getAppointmentsByDoctorEmail = async (req, res, next) => {
+  try {
+    const appointment = await AppointmentModel.find({
+      doctorEmail: req.params.doctorEmail,
+    });
+    res.status(200).json(appointment);
+  } catch (err) {
+    next(err);
+  }
+};
+
 const getMonthlyAppointmentCounts = async (req, res) => {
   try {
     const appointmentCounts = await AppointmentModel.aggregate([
@@ -47,12 +58,55 @@ const getMonthlyAppointmentCounts = async (req, res) => {
 
 const getAppointmentByEmail = async (req, res) => {
   try {
-    const appointment = await AppointmentModel.find({
+    const appointments = await AppointmentModel.find({
       email: req.params.email,
+    });
+    res.status(200).json(appointments);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
+const getAppointmentCount = async (req, res) => {
+  try {
+    const { email, appointmentDate, doctorEmail } = req.query;
+
+    // Count appointments for the specified doctor/clinic on the given date
+    const count = await AppointmentModel.countDocuments({
+      email: email,
+      appointmentDate: appointmentDate,
+      doctorEmail: doctorEmail,
+    });
+
+    res.status(200).json(count);
+  } catch (error) {
+    console.error("Error fetching appointment count:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
+const deleteAppointmentById = async (req, res, next) => {
+  try {
+    const appointment = await AppointmentModel.findOneAndDelete({
+      _id: req.params.id,
     });
     res.status(200).json(appointment);
   } catch (err) {
-    console.log(err);
+    next(err);
+  }
+};
+
+const updateAppointmentById = async (req, res) => {
+  try {
+    const appointment = await AppointmentModel.findByIdAndUpdate(
+      req.params.id,
+      { $set: req.body },
+      { new: true }
+    );
+    res.status(200).json(appointment);
+  } catch (error) {
+    console.log(error);
   }
 };
 
@@ -62,4 +116,8 @@ module.exports = {
   getAppointmentList,
   getAppointmentByEmail,
   getMonthlyAppointmentCounts,
+  getAppointmentCount,
+  deleteAppointmentById,
+  updateAppointmentById,
+  getAppointmentsByDoctorEmail,
 };

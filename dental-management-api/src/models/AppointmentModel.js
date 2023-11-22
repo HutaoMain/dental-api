@@ -8,6 +8,9 @@ const AppointmentSchema = new mongoose.Schema(
     clinicName: {
       type: String,
     },
+    doctorEmail: {
+      type: String,
+    },
     email: {
       type: String,
       required: true,
@@ -29,14 +32,17 @@ const AppointmentSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    reason: {
-      type: String,
-      required: true,
-    },
     birthdate: {
       type: String,
     },
     address: {
+      type: String,
+    },
+    status: {
+      type: String,
+      default: "Pending",
+    },
+    service: {
       type: String,
     },
   },

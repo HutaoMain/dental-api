@@ -19,7 +19,7 @@ import ViewDoctor from "../components/ViewDoctor";
 import { Link } from "react-router-dom";
 import useAuthStore from "../zustand/AuthStore";
 
-const Users = () => {
+const Patient = () => {
   // const [selectedRole, setSelectedRole] = useState<string>("");
   const [filteredUser, setFilteredUser] = useState<UserInterface[]>();
   const [searchTerm, setSearchTerm] = useState<string>("");
@@ -40,10 +40,10 @@ const Users = () => {
   }, [user]);
 
   const { data } = useQuery<UserInterface[]>({
-    queryKey: ["Users"],
+    queryKey: ["Patients"],
     queryFn: () =>
       axios
-        .get(`${import.meta.env.VITE_APP_API_URL}/api/user/list`)
+        .get(`${import.meta.env.VITE_APP_API_URL}/api/user/getPatients/patient`)
         .then((res) => res.data),
   });
 
@@ -143,7 +143,7 @@ const Users = () => {
           </TableHead>
           <TableBody className="assessment-tablebody">
             {filtered?.map((item, index) => (
-              <TableRow key={item.email}>
+              <TableRow key={item._id}>
                 <TableCell align="center">{item.email}</TableCell>
                 <TableCell align="center">{item.fullname}</TableCell>
                 <TableCell align="center">
@@ -220,4 +220,4 @@ const Users = () => {
   );
 };
 
-export default Users;
+export default Patient;

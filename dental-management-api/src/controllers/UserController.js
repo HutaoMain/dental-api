@@ -117,6 +117,15 @@ const updateUserByContactNumber = async (req, res) => {
   }
 };
 
+const getUsersByRolePatient = async (req, res) => {
+  try {
+    const user = await UserModel.find({ role: "patient" });
+    res.status(200).json(user);
+  } catch (error) {
+    console.log(error);
+  }
+};
+
 module.exports = {
   registerUser,
   loginUser,
@@ -124,4 +133,5 @@ module.exports = {
   getUserList,
   getUserById,
   updateUserByContactNumber,
+  getUsersByRolePatient,
 };

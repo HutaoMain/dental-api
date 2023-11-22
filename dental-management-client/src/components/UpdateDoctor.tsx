@@ -1,21 +1,36 @@
 import axios from "axios";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { FileUpload } from "@mui/icons-material";
+import { UserInterface } from "../Types";
 
 interface Prop {
   toggleIsOpen: () => void;
+  userEmail: string;
+  paramsId: string;
 }
 
-const AddDoctor = ({ toggleIsOpen }: Prop) => {
+const UpdateDoctor = ({ toggleIsOpen, userEmail, paramsId }: Prop) => {
   const [clinicName, setClinicName] = useState<string>("");
   const [dentistName, setDentistName] = useState<string>("");
   const [birthday, setBirthday] = useState<string>("");
   const [email, setEmail] = useState<string>("");
-  const [password, setPassword] = useState<string>("");
   const [graduateSchool, setGraduateSchool] = useState<string>("");
   const [assistantName, setAssistantName] = useState<string>("");
   const [contact, setContact] = useState<string>("");
   const [ImageFile, setImageFile] = useState<string>("");
+  const [userData, setUserData] = useState<UserInterface>();
+
+  useEffect(() => {
+    const fetch = async () => {
+      const res = await axios.get(
+        `${import.meta.env.VITE_APP_API_URL}/api/user/${userEmail}`
+      );
+      setUserData(res.data);
+    };
+    fetch();
+  }, [userEmail]);
+
+  console.log("paramsId", paramsId);
 
   const fileTypeChecking = (e: any) => {
     var fileInput = document.getElementById("file-upload") as HTMLInputElement;
@@ -37,47 +52,60 @@ const AddDoctor = ({ toggleIsOpen }: Prop) => {
   console.log(clinicName);
 
   const handleSubmitDoctor = async () => {
-    // validations
-    if (
-      clinicName === "" ||
-      dentistName === "" ||
-      birthday === "" ||
-      email === "" ||
-      password === "" ||
-      graduateSchool === "" ||
-      assistantName === "" ||
-      contact === "" ||
-      ImageFile === ""
-    ) {
-      return alert("Please complete the form!");
-    }
-
     try {
-      const data = new FormData();
-      data.append("file", ImageFile);
-      data.append("upload_preset", "upload");
-      const uploadRes = await axios.post(
-        "https://api.cloudinary.com/v1_1/alialcantara/image/upload",
-        data
-      );
-      const { url } = uploadRes.data;
+      if (ImageFile) {
+        const data = new FormData();
+        data.append("file", ImageFile);
+        data.append("upload_preset", "upload");
+        const uploadRes = await axios.post(
+          "https://api.cloudinary.com/v1_1/alialcantara/image/upload",
+          data
+        );
+        const { url } = uploadRes.data;
 
-      await axios.post(
-        `${import.meta.env.VITE_APP_API_URL}/api/user/register`,
-        {
-          profilePicture: url,
-          clinicName: clinicName,
-          fullname: dentistName,
-          birthdate: birthday,
-          assistantName: assistantName,
-          graduateSchool: graduateSchool,
-          email: email,
-          role: "doctor",
-          password: password,
-          contactNumber: contact,
-        }
-      );
-      window.location.reload();
+        await axios.put(
+          `${
+            import.meta.env.VITE_APP_API_URL
+          }/api/user/update/doctor/${paramsId}`,
+          {
+            profilePicture: url,
+            clinicName: clinicName ? clinicName : userData?.clinicName,
+            fullname: dentistName ? dentistName : userData?.fullname,
+            birthdate: birthday ? birthday : userData?.birthdate,
+            assistantName: assistantName
+              ? assistantName
+              : userData?.assistantName,
+            graduateSchool: graduateSchool
+              ? graduateSchool
+              : userData?.graduateSchool,
+            email: email ? email : userData?.email,
+            role: "doctor",
+            contactNumber: contact ? contact : userData?.contactNumber,
+          }
+        );
+        window.location.reload();
+      } else {
+        await axios.put(
+          `${
+            import.meta.env.VITE_APP_API_URL
+          }/api/user/update/doctor/${paramsId}`,
+          {
+            clinicName: clinicName ? clinicName : userData?.clinicName,
+            fullname: dentistName ? dentistName : userData?.fullname,
+            birthdate: birthday ? birthday : userData?.birthdate,
+            assistantName: assistantName
+              ? assistantName
+              : userData?.assistantName,
+            graduateSchool: graduateSchool
+              ? graduateSchool
+              : userData?.graduateSchool,
+            email: email ? email : userData?.email,
+            role: "doctor",
+            contactNumber: contact ? contact : userData?.contactNumber,
+          }
+        );
+        window.location.reload();
+      }
     } catch (error) {
       console.log(error);
     }
@@ -94,7 +122,7 @@ const AddDoctor = ({ toggleIsOpen }: Prop) => {
               ? URL.createObjectURL(
                   new Blob([ImageFile], { type: "image/jpeg" })
                 )
-              : "https://icon-library.com/images/no-image-icon/no-image-icon-0.jpg"
+              : userData?.profilePicture
           }
           alt="AddImage"
           className="w-[150px] h-[150px] object-contain"
@@ -123,6 +151,7 @@ const AddDoctor = ({ toggleIsOpen }: Prop) => {
         </label>
         <input
           onChange={(e) => setClinicName(e.target.value)}
+          defaultValue={userData?.clinicName}
           type="text"
           id="clinicName"
           name="clinicName"
@@ -140,6 +169,7 @@ const AddDoctor = ({ toggleIsOpen }: Prop) => {
         </label>
         <input
           onChange={(e) => setDentistName(e.target.value)}
+          defaultValue={userData?.fullname}
           type="text"
           id="dentistName"
           name="dentistName"
@@ -148,7 +178,7 @@ const AddDoctor = ({ toggleIsOpen }: Prop) => {
       </div>
 
       {/* Email of Clinic */}
-      <div className="mb-4">
+      {/* <div className="mb-4">
         <label
           htmlFor="clinicEmail"
           className="block text-sm font-medium text-gray-700"
@@ -162,7 +192,7 @@ const AddDoctor = ({ toggleIsOpen }: Prop) => {
           name="password"
           className="mt-1 p-2 border rounded-md w-full"
         />
-      </div>
+      </div> */}
 
       {/* Birthdate */}
       <div className="mb-4">
@@ -174,6 +204,7 @@ const AddDoctor = ({ toggleIsOpen }: Prop) => {
         </label>
         <input
           onChange={(e) => setBirthday(e.target.value)}
+          defaultValue={userData?.birthdate}
           type="date"
           id="birthdate"
           name="birthdate"
@@ -191,6 +222,7 @@ const AddDoctor = ({ toggleIsOpen }: Prop) => {
         </label>
         <input
           onChange={(e) => setEmail(e.target.value)}
+          defaultValue={userData?.email}
           type="email"
           id="clinicEmail"
           name="clinicEmail"
@@ -207,6 +239,7 @@ const AddDoctor = ({ toggleIsOpen }: Prop) => {
           Graduate School:
         </label>
         <input
+          defaultValue={userData?.graduateSchool}
           onChange={(e) => setGraduateSchool(e.target.value)}
           type="text"
           id="graduateSchool"
@@ -224,6 +257,7 @@ const AddDoctor = ({ toggleIsOpen }: Prop) => {
           Name of Assistant / Staff:
         </label>
         <input
+          defaultValue={userData?.assistantName}
           onChange={(e) => setAssistantName(e.target.value)}
           type="text"
           id="assistantName"
@@ -241,6 +275,7 @@ const AddDoctor = ({ toggleIsOpen }: Prop) => {
           Contact Number:
         </label>
         <input
+          defaultValue={userData?.contactNumber}
           onChange={(e) => setContact(e.target.value)}
           type="text"
           id="contactNumber"
@@ -269,4 +304,4 @@ const AddDoctor = ({ toggleIsOpen }: Prop) => {
   );
 };
 
-export default AddDoctor;
+export default UpdateDoctor;
